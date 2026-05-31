@@ -8,7 +8,7 @@ from typing import Any, Dict, Iterable, List, Optional
 import json
 
 import requests
-from sqlalchemy import text
+from sqlalchemy import text, create_engine
 from sqlalchemy.exc import OperationalError, SQLAlchemyError
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import threading
@@ -25,6 +25,15 @@ def get_session() -> requests.Session:
     s = getattr(_thread_local, "session", None)
     if s is None:
         s = requests.Session()
+        # Set a non-default User-Agent and request JSON to avoid servers
+        # blocking the default python-requests UA. Also set a sensible
+        # Accept header so the API returns JSON instead of HTML.
+        s.headers.update(
+            {
+                "Accept": "application/json",
+                "User-Agent": "NasaThingy/1.0 (+https://github.com/praneetnrana/Nasa-Thingy)",
+            }
+        )
         retries = Retry(
             total=3,
             backoff_factor=0.5,
@@ -251,6 +260,12 @@ def main(argv: Optional[List[str]] = None) -> int:
         default=32,
         help="Number of parallel worker threads to use when fetching project details (soft-capped)",
     )
+    parser.add_argument(
+        "--chunk-size",
+        type=int,
+        default=10,
+        help="Number of project IDs to process per worker task (workers pull next chunk when done)",
+    )
 
     def state_file_path() -> Path:
         return BACKEND_DIR / ".ingest_state"
@@ -406,7 +421,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         format="%(asctime)s %(levelname)s %(message)s",
     )
 
-    max_workers_cap = 128
+    max_workers_cap = 200
     if args.workers > max_workers_cap:
         logging.warning("--workers value %d capped to %d", args.workers, max_workers_cap)
         args.workers = max_workers_cap
@@ -417,8 +432,20 @@ def main(argv: Optional[List[str]] = None) -> int:
     api_key = get_required_env("NASA_TECHPORT_API_KEY")
 
     global engine
-# moment of truth. nasa has thousands of projects. go fetch, little script.shu shu !!!!!!
-    engine = create_db_engine(get_required_env("DATABASE_URL"))
+    # moment of truth. nasa has thousands of projects. go fetch, little script.
+    # Create a dedicated engine sized according to the worker count to avoid
+    # exhausting the default cached engine's pool when using many threads.
+    db_url = get_required_env("DATABASE_URL")
+    # Heuristic: allocate a reasonable pool based on workers (min 5, up to 100)
+    pool_size = min(max(5, args.workers // 4), 100)
+    max_overflow = max(10, args.workers - pool_size)
+    engine = create_engine(
+        db_url,
+        pool_size=pool_size,
+        max_overflow=max_overflow,
+        pool_pre_ping=True,
+        pool_recycle=3600,
+    )
 
     try:
         with engine.connect() as conn:
@@ -459,52 +486,81 @@ def main(argv: Optional[List[str]] = None) -> int:
     total = len(project_ids)
     logging.info("Found %d projects (using limit=%s)", total, args.limit or "none")
 
-    batch: List[Dict[str, Any]] = []
     start_time = time.time()
     last_log_time = start_time
     upserted_count = 0
 
-
-    def fetch_worker(pid: int):
-
-        try:
-            if args.skip_existing:
-                with engine.connect() as conn:
-                    exists = conn.execute(
-                        text("SELECT 1 FROM projects WHERE id = :id LIMIT 1"), {"id": pid}
-                    ).first()
-                if exists:
-                    logging.debug("Skipping existing project %s", pid)
-                    return ("skip", pid, None)
-            project = fetch_project_detail(api_key, pid)
-            record = normalize_project(project)
-            return ("ok", pid, record)
-        except RuntimeError as exc:
-            logging.error("%s", exc)
-            return ("error", pid, exc)
-        except (TypeError, ValueError) as exc:
-            logging.error("Failed to normalize project %s: %s", pid, exc)
-            return ("error", pid, exc)
-
+    # Map pid -> sequential index for progress/state saving
     id_to_index = {pid: idx for idx, pid in enumerate(project_ids, start=1)}
-    processed = 0
 
     pbar = tqdm(total=total) if tqdm else None
+
+    def fetch_worker_chunk(pids: List[int]):
+        """Process a small chunk of project ids: skip existing, fetch missing, upsert them."""
+        processed_local = 0
+        upsert_local = 0
+        last_index = None
+        try:
+            # Determine which IDs are already present in DB to avoid unnecessary fetches
+            if args.skip_existing and pids:
+                placeholders = ",".join(f":id{i}" for i in range(len(pids)))
+                params = {f"id{i}": pid for i, pid in enumerate(pids)}
+                q = text(f"SELECT id FROM projects WHERE id IN ({placeholders})")
+                with engine.connect() as conn:
+                    rows = conn.execute(q, params).fetchall()
+                existing_ids = {r[0] for r in rows}
+                missing = [pid for pid in pids if pid not in existing_ids]
+            else:
+                missing = list(pids)
+
+            records: List[Dict[str, Any]] = []
+            for pid in missing:
+                try:
+                    project = fetch_project_detail(api_key, pid)
+                    record = normalize_project(project)
+                    records.append(record)
+                except RuntimeError as exc:
+                    logging.error("%s", exc)
+                except (TypeError, ValueError) as exc:
+                    logging.error("Failed to normalize project %s: %s", pid, exc)
+
+            if records:
+                try:
+                    upsert_projects(records)
+                    upsert_local = len(records)
+                except (OperationalError, SQLAlchemyError) as exc:
+                    logging.error("Database write failed: %s", exc)
+
+            processed_local = len(pids)
+            last_index = id_to_index.get(pids[-1]) if pids else None
+        except Exception:
+            logging.exception("Worker chunk failed")
+
+        return processed_local, upsert_local, last_index
+
+
+    # Split project ids into chunks that workers will pick up one-at-a-time
+    chunk_size = max(1, args.chunk_size)
+    chunks: List[List[int]] = [project_ids[i : i + chunk_size] for i in range(0, len(project_ids), chunk_size)]
+
+    processed = 0
+
     try:
         with ThreadPoolExecutor(max_workers=args.workers) as executor:
-            futures = {executor.submit(fetch_worker, pid): pid for pid in project_ids}
+            futures = {executor.submit(fetch_worker_chunk, chunk): chunk for chunk in chunks}
+            max_saved_index = 0
             for fut in as_completed(futures):
-                status, pid, payload = fut.result()
-                index = id_to_index[futures[fut]]
-                processed += 1
+                processed_count, upsert_count, last_index = fut.result()
+                processed += processed_count
+                upserted_count += upsert_count
 
                 # Update progress UI
                 if pbar:
-                    pbar.update(1)
+                    pbar.update(processed_count)
                 else:
                     now = time.time()
                     if args.verbose:
-                        logging.debug("Processing %d/%d project_id=%s", index, total, pid)
+                        logging.debug("Processed %d/%d (chunk) — upserted %d", processed, total, upsert_count)
                     elif now - last_log_time >= 5:
                         pct = (processed / total) * 100 if total else 0
                         elapsed = now - start_time
@@ -516,36 +572,26 @@ def main(argv: Optional[List[str]] = None) -> int:
                         print(progress_line, end="\r", flush=True)
                         last_log_time = now
 
-                if status == "ok":
-                    batch.append(payload)
-
-                if len(batch) >= args.batch_size:
+                # Save state using the highest index seen so far
+                if args.use_state_file and last_index:
                     try:
-                        upsert_projects(batch)
-                    except (OperationalError, SQLAlchemyError) as exc:
-                        logging.error("Database write failed: %s", exc)
-                        if pbar:
-                            pbar.close()
-                        return 1
-                    upserted_count += len(batch)
+                        if last_index > max_saved_index:
+                            max_saved_index = last_index
+                            save_state(max_saved_index)
+                    except Exception:
+                        logging.debug("Failed to save state for index %s", last_index)
+
+                if upsert_count:
                     logging.info("Upserted %d/%d projects", upserted_count, total)
-                    if args.use_state_file:
-                        save_state(index)
-                    batch = []
     finally:
         if pbar:
             pbar.close()
 
-    if batch:
+    if args.use_state_file:
         try:
-            upsert_projects(batch)
-        except (OperationalError, SQLAlchemyError) as exc:
-            logging.error("Database write failed: %s", exc)
-            return 1
-        upserted_count += len(batch)
-        logging.info("Upserted %d/%d projects", upserted_count, total)
-        if args.use_state_file:
             save_state(total)
+        except Exception:
+            logging.debug("Failed to write final state file")
 
     elapsed = time.time() - start_time
     logging.info("Ingestion complete: %d projects in %.1fs (%.2f/s)", upserted_count, elapsed, upserted_count / elapsed if elapsed else 0)
