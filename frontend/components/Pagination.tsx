@@ -76,7 +76,7 @@ export default function Pagination({
                   ? 'space-btn-primary border-0'
                   : 'space-btn'
               }`}
-              style={isCurrent ? { boxShadow: '0 0 14px var(--accent-glow)' } : undefined}
+              style={isCurrent ? { boxShadow: '0 4px 0 var(--navy-deep)' } : undefined}
             >
               {page}
             </button>

@@ -54,9 +54,9 @@ export default function IssTrackerPage() {
     let reconnectTimer: number | null = null
 
     const connect = () => {
-      const wsUrl = `${getApiIssWsUrl()}/iss/stream`
       setWsStatus(reconnectAttempts > 0 ? 'reconnecting' : 'connecting')
       try {
+        const wsUrl = `${getApiIssWsUrl()}/iss/stream`
         ws = new WebSocket(wsUrl)
       } catch (e) {
         setWsStatus('reconnecting')

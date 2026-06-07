@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nasapedia — Design Direction</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #11131a;
+    color: #e8eaf0;
+    padding: 28px 22px 60px;
+    line-height: 1.5;
+  }
+  .head { max-width: 1180px; margin: 0 auto 22px; }
+  h1 { font-size: 26px; letter-spacing:-0.5px; margin-bottom:6px; }
+  .sub { color:#9aa0b0; font-size:14px; }
+  .grid { max-width: 1180px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+  .pick {
+    border:2px solid transparent; border-radius:18px; overflow:hidden; cursor:pointer;
+    transition: transform .15s, border-color .15s, box-shadow .15s; background:#1a1d26;
+  }
+  .pick:hover { transform:translateY(-4px); border-color:#5B8DEF; box-shadow:0 16px 40px rgba(0,0,0,.5); }
+  .pick.sel { border-color:#FFC23C; box-shadow:0 0 0 4px rgba(255,194,60,.25); }
+  .pick-label { padding:14px 18px; display:flex; justify-content:space-between; align-items:center; }
+  .pick-label h3 { font-size:17px; }
+  .pick-label .tag { font-size:11px; text-transform:uppercase; letter-spacing:1px; color:#9aa0b0; }
+  .pick-note { padding:0 18px 16px; font-size:13px; color:#aab0c0; }
+  .frame { aspect-ratio: 16/11; overflow:hidden; position:relative; border-top:1px solid rgba(255,255,255,.08); border-bottom:1px solid rgba(255,255,255,.08); }
+  .scale { transform: scale(0.62); transform-origin: top left; width:161%; height:161%; }
+
+  /* ---------- shared mock skeleton ---------- */
+  .mock { width:100%; height:100%; font-size:13px; position:relative; }
+  .nav { display:flex; align-items:center; gap:18px; padding:0 26px; height:52px; font-weight:600; font-size:12px; }
+  .nav .logo { font-weight:800; font-size:16px; letter-spacing:-0.3px; display:flex; align-items:center; gap:7px; }
+  .planet { width:22px;height:22px;border-radius:50%; position:relative; display:inline-block; }
+  .planet::after { content:""; position:absolute; inset:-3px -7px; border:2px solid #FFC23C; border-radius:50%; transform:rotate(-20deg); clip-path: polygon(0 55%,100% 30%,100% 70%,0 92%); }
+  .nav a { opacity:.7; }
+  .nav a.on { opacity:1; }
+  .hero { padding:34px 26px 22px; }
+  .hero h2 { font-size:30px; letter-spacing:-1px; margin-bottom:8px; font-weight:800; }
+  .hero p { font-size:14px; max-width:520px; }
+  .search { margin-top:16px; height:42px; border-radius:12px; display:flex; align-items:center; padding:0 16px; font-size:13px; max-width:480px; }
+  .cards { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; padding:18px 26px; }
+  .card { border-radius:14px; padding:16px; min-height:118px; display:flex; flex-direction:column; gap:8px; }
+  .card .badge { font-size:10px; padding:3px 9px; border-radius:20px; align-self:flex-start; font-weight:700; letter-spacing:.5px; }
+  .card h4 { font-size:14px; }
+  .card .meta { font-size:11px; margin-top:auto; opacity:.7; }
+  .chips { display:flex; gap:8px; padding:0 26px 6px; }
+  .chip { font-size:11px; padding:5px 13px; border-radius:20px; font-weight:600; }
+
+  /* ---------- A: Bright & Playful ---------- */
+  .A { background:#FBF6EC; color:#1b2a6b; }
+  .A .nav { background:#FDF9F0; border-bottom:1px solid #ece3cf; }
+  .A .nav .logo { color:#1b2a6b; }
+  .A .planet { background:#4A90D9; }
+  .A .nav a { color:#3a4a8c; }
+  .A .nav a.on { color:#1b2a6b; border-bottom:2px solid #FFC23C; padding-bottom:4px; }
+  .A .hero h2 { color:#1b2a6b; }
+  .A .hero p { color:#5a6488; }
+  .A .search { background:#fff; border:1.5px solid #d9e1f5; color:#8a93b0; box-shadow:0 4px 14px rgba(74,144,217,.10); }
+  .A .chip { background:#fff; color:#3a4a8c; border:1.5px solid #e3d9c2; }
+  .A .chip.on { background:#5B8DEF; color:#fff; border-color:#5B8DEF; }
+  .A .card { background:#fff; border:1.5px solid #ece3cf; box-shadow:0 6px 18px rgba(74,144,217,.08); }
+  .A .card:nth-child(1) .badge { background:#e9f0ff; color:#3a6fd8; }
+  .A .card:nth-child(2) .badge { background:#fce8f1; color:#d8568e; }
+  .A .card:nth-child(3) .badge { background:#fff3d6; color:#c79412; }
+  .A .card:nth-child(4) .badge { background:#efeaff; color:#7a5fc0; }
+  .A .card:nth-child(5) .badge { background:#e9f0ff; color:#3a6fd8; }
+  .A .card:nth-child(6) .badge { background:#fff3d6; color:#c79412; }
+  .A .card h4 { color:#1b2a6b; }
+  .A .card .meta { color:#8a93b0; }
+
+  /* ---------- B: Cosmic Dark, Brand-Aligned ---------- */
+  .B { background: radial-gradient(circle at 20% 10%, #243a8a 0%, transparent 42%), radial-gradient(circle at 85% 90%, #3a2a6b 0%, transparent 40%), #0b1130; color:#eaf0ff; }
+  .B .nav { background:rgba(13,20,55,.7); border-bottom:1px solid rgba(120,150,255,.16); backdrop-filter:blur(6px); }
+  .B .nav .logo { color:#fff; }
+  .B .planet { background:#5B8DEF; }
+  .B .nav a { color:#aab6e8; }
+  .B .nav a.on { color:#fff; border-bottom:2px solid #FFC23C; padding-bottom:4px; }
+  .B .hero h2 { color:#fff; }
+  .B .hero p { color:#aab6e8; }
+  .B .search { background:rgba(255,255,255,.06); border:1.5px solid rgba(120,150,255,.25); color:#9aa6d8; }
+  .B .chip { background:rgba(255,255,255,.06); color:#cdd6ff; border:1.5px solid rgba(120,150,255,.2); }
+  .B .chip.on { background:#FFC23C; color:#1b2a6b; border-color:#FFC23C; }
+  .B .card { background:rgba(255,255,255,.05); border:1.5px solid rgba(120,150,255,.18); backdrop-filter:blur(4px); }
+  .B .card:nth-child(1) .badge { background:rgba(91,141,239,.25); color:#9fc0ff; }
+  .B .card:nth-child(2) .badge { background:rgba(247,168,196,.22); color:#f9b6cf; }
+  .B .card:nth-child(3) .badge { background:rgba(255,194,60,.22); color:#ffd97a; }
+  .B .card:nth-child(4) .badge { background:rgba(155,123,214,.25); color:#c4abf0; }
+  .B .card:nth-child(5) .badge { background:rgba(91,141,239,.25); color:#9fc0ff; }
+  .B .card:nth-child(6) .badge { background:rgba(255,194,60,.22); color:#ffd97a; }
+  .B .card h4 { color:#fff; }
+  .B .card .meta { color:#8f9cce; }
+  .B .star { position:absolute; width:3px;height:3px;border-radius:50%;background:#fff;opacity:.6; }
+</style>
+</head>
+<body>
+  <div class="head">
+    <h1>Two design directions — both built from your logo</h1>
+    <p class="sub">Same Projects / Mission Database page, two moods. Click the one that feels right. Hover to lift.</p>
+  </div>
+
+  <div class="grid">
+    <!-- A -->
+    <div class="pick" data-choice="bright" onclick="toggleSelect(this)">
+      <div class="frame"><div class="scale"><div class="mock A">
+        <div class="nav">
+          <span class="logo"><span class="planet"></span>Nasapedia</span>
+          <a class="on">Projects</a><a>Feed</a><a>Command Center</a><a>Aurora</a><a>ISS</a><a>News</a>
+        </div>
+        <div class="hero">
+          <h2>Explore every NASA mission</h2>
+          <p>Your friendly window into space — search thousands of missions, satellites and discoveries.</p>
+          <div class="search">🔍&nbsp;&nbsp;Search missions, agencies, spacecraft…</div>
+        </div>
+        <div class="chips"><span class="chip on">All</span><span class="chip">Active</span><span class="chip">Crewed</span><span class="chip">Mars</span><span class="chip">Recent</span></div>
+        <div class="cards">
+          <div class="card"><span class="badge">ACTIVE</span><h4>Artemis II</h4><div class="meta">Crewed · 2025</div></div>
+          <div class="card"><span class="badge">MARS</span><h4>Perseverance</h4><div class="meta">Rover · NASA</div></div>
+          <div class="card"><span class="badge">OBSERV.</span><h4>James Webb</h4><div class="meta">Telescope</div></div>
+          <div class="card"><span class="badge">DEEP SPACE</span><h4>Voyager 1</h4><div class="meta">Probe · 1977</div></div>
+          <div class="card"><span class="badge">ACTIVE</span><h4>ISS</h4><div class="meta">Station</div></div>
+          <div class="card"><span class="badge">LUNAR</span><h4>Lunar Gateway</h4><div class="meta">Planned</div></div>
+        </div>
+      </div></div></div>
+      <div class="pick-label"><h3>A · Bright &amp; Playful</h3><span class="tag">matches logo 1:1</span></div>
+      <div class="pick-note">Cream canvas, navy + cornflower, rounded cards, pastel category colors. Approachable, "wiki for everyone," exactly the logo's energy.</div>
+    </div>
+
+    <!-- B -->
+    <div class="pick" data-choice="cosmic" onclick="toggleSelect(this)">
+      <div class="frame"><div class="scale"><div class="mock B">
+        <span class="star" style="top:30px;left:60%"></span><span class="star" style="top:80px;left:30%"></span><span class="star" style="top:140px;left:80%"></span><span class="star" style="top:200px;left:15%"></span>
+        <div class="nav">
+          <span class="logo"><span class="planet"></span>Nasapedia</span>
+          <a class="on">Projects</a><a>Feed</a><a>Command Center</a><a>Aurora</a><a>ISS</a><a>News</a>
+        </div>
+        <div class="hero">
+          <h2>Explore every NASA mission</h2>
+          <p>Your friendly window into space — search thousands of missions, satellites and discoveries.</p>
+          <div class="search">🔍&nbsp;&nbsp;Search missions, agencies, spacecraft…</div>
+        </div>
+        <div class="chips"><span class="chip on">All</span><span class="chip">Active</span><span class="chip">Crewed</span><span class="chip">Mars</span><span class="chip">Recent</span></div>
+        <div class="cards">
+          <div class="card"><span class="badge">ACTIVE</span><h4>Artemis II</h4><div class="meta">Crewed · 2025</div></div>
+          <div class="card"><span class="badge">MARS</span><h4>Perseverance</h4><div class="meta">Rover · NASA</div></div>
+          <div class="card"><span class="badge">OBSERV.</span><h4>James Webb</h4><div class="meta">Telescope</div></div>
+          <div class="card"><span class="badge">DEEP SPACE</span><h4>Voyager 1</h4><div class="meta">Probe · 1977</div></div>
+          <div class="card"><span class="badge">ACTIVE</span><h4>ISS</h4><div class="meta">Station</div></div>
+          <div class="card"><span class="badge">LUNAR</span><h4>Lunar Gateway</h4><div class="meta">Planned</div></div>
+        </div>
+      </div></div></div>
+      <div class="pick-label"><h3>B · Cosmic Dark, Brand-Aligned</h3><span class="tag">keeps space immersion</span></div>
+      <div class="pick-note">Deep indigo/navy night sky (not the current muddy brown/gold), with the logo's cornflower blue, gold rings and pastel accents. Still "space," but pretty and on-brand.</div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import Image from 'next/image'
 import Filters from '../components/Filters'
 import LoadingState from '../components/LoadingState'
 import Pagination from '../components/Pagination'
@@ -8,7 +9,6 @@ import ProjectList from '../components/ProjectList'
 import SearchBar from '../components/SearchBar'
 import { useProjectsPaginated } from '../hooks/useProjectsPaginated'
 import Doodle from './brand/Doodle'
-import Mascot from './brand/Mascot'
 import EmptyState from './EmptyState'
 
 const DEFAULT_ORDER = 'popularity'
@@ -131,7 +131,15 @@ export default function ProjectsExplorer() {
           <p className="page-subtitle">Search thousands of missions, satellites and discoveries — your friendly window into space.</p>
         </div>
         <div className="page-hero__rail" style={{ alignItems: 'center' }}>
-          <Mascot size={150} expression="read" bob aria-hidden />
+          <Image
+            src="/nasapedia-logo.webp"
+            alt="Nasapedia"
+            width={420}
+            height={236}
+            priority
+            className="nova-bob"
+            style={{ width: '100%', maxWidth: 360, height: 'auto' }}
+          />
         </div>
       </section>
 

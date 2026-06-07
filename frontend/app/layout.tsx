@@ -14,6 +14,17 @@ const caveat = Caveat({ subsets: ['latin'], weight: ['600', '700'], variable: '-
 export const metadata: Metadata = {
   title: 'Nasapedia',
   description: 'Your friendly guide to everything space',
+  openGraph: {
+    title: 'Nasapedia',
+    description: 'Your friendly guide to everything space',
+    images: [{ url: '/nasapedia-logo.webp', width: 1600, height: 900, alt: 'Nasapedia' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Nasapedia',
+    description: 'Your friendly guide to everything space',
+    images: ['/nasapedia-logo.webp'],
+  },
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

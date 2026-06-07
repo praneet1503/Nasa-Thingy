@@ -241,11 +241,11 @@ export default function SearchBar({
           value={searchType}
           onChange={(e) => onSearchTypeChange?.(e.target.value as 'keyword' | 'semantic')}
           className="space-input text-sm py-2 px-3"
-          style={{ 
-            backgroundColor: 'var(--space-mid)',
-            color: 'var(--text-primary)',
-            border: '1px solid var(--border)',
-            borderRadius: '4px',
+          style={{
+            backgroundColor: '#fff',
+            color: 'var(--navy)',
+            border: '1.5px solid var(--border-strong)',
+            borderRadius: '0.9rem',
           }}
         >
           <option value="keyword">Keyword</option>
