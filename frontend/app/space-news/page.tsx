@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import LoadingState from '../../components/LoadingState'
+import EmptyState from '../../components/EmptyState'
 import LoadMoreButton from '../../components/news/LoadMoreButton'
 import NewsGrid from '../../components/news/NewsGrid'
 import SectionHeader from '../../components/news/SectionHeader'
@@ -64,10 +65,13 @@ export default function SpaceNewsPage() {
           <>
             {items.length > 0 ? (
               <div className="space-y-5">
-                <SectionHeader
-                  title="Latest Articles"
-                  subtitle={`Showing ${items.length} articles`}
-                />
+                <div>
+                  <span className="page-eyebrow">space, hot off the press 📰</span>
+                  <SectionHeader
+                    title="Latest Articles"
+                    subtitle={`Showing ${items.length} articles`}
+                  />
+                </div>
                 <NewsGrid
                   items={items}
                   onItemClick={handleItemClick}
@@ -83,11 +87,11 @@ export default function SpaceNewsPage() {
             ) : null}
 
             {!isLoading && items.length === 0 && !isError ? (
-              <div className="surface-panel surface-panel--empty text-center">
-                <p className="mt-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                  No space news available right now.
-                </p>
-              </div>
+              <EmptyState
+                title="No space news right now"
+                body="Check back soon — the cosmos is always making headlines."
+                expression="sleep"
+              />
             ) : null}
           </>
         )}

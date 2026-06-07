@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import LoadingState from '../../components/LoadingState'
+import EmptyState from '../../components/EmptyState'
 import LoadMoreButton from '../../components/news/LoadMoreButton'
 import NewsGrid from '../../components/news/NewsGrid'
 import SectionHeader from '../../components/news/SectionHeader'
@@ -92,21 +93,36 @@ export default function SpaceBlogsPage() {
             {/* Section 1: Blogs */}
             {blogItems.length > 0 || !blogsQuery.isError ? (
               <div className="space-y-5">
-                <SectionHeader
-                  title="Latest Blogs"
-                  subtitle={`Showing ${blogItems.length} blogs`}
-                />
-                <NewsGrid
-                  items={blogItems}
-                  onItemClick={handleItemClick}
-                  contentType="blog"
-                  isStale={blogsQuery.isPlaceholderData}
-                />
-                <LoadMoreButton
-                  onClick={handleLoadMoreBlogs}
-                  isLoading={blogsQuery.isLoading && blogItems.length > 0}
-                  hasMore={blogHasMore}
-                />
+                <div>
+                  <span className="page-eyebrow">long reads from the stars ✨</span>
+                  <SectionHeader
+                    title="Latest Blogs"
+                    subtitle={`Showing ${blogItems.length} blogs`}
+                  />
+                </div>
+                {blogItems.length > 0 ? (
+                  <>
+                    <NewsGrid
+                      items={blogItems}
+                      onItemClick={handleItemClick}
+                      contentType="blog"
+                      isStale={blogsQuery.isPlaceholderData}
+                    />
+                    <LoadMoreButton
+                      onClick={handleLoadMoreBlogs}
+                      isLoading={blogsQuery.isLoading && blogItems.length > 0}
+                      hasMore={blogHasMore}
+                    />
+                  </>
+                ) : (
+                  !blogsQuery.isLoading && !blogsQuery.isError ? (
+                    <EmptyState
+                      title="No blogs yet"
+                      body="Long reads from the cosmos will appear here soon."
+                      expression="sleep"
+                    />
+                  ) : null
+                )}
               </div>
             ) : null}
 
@@ -117,17 +133,29 @@ export default function SpaceBlogsPage() {
                   title="Latest Articles"
                   subtitle={`Showing ${articleItems.length} articles`}
                 />
-                <NewsGrid
-                  items={articleItems}
-                  onItemClick={handleItemClick}
-                  contentType="article"
-                  isStale={articlesQuery.isPlaceholderData}
-                />
-                <LoadMoreButton
-                  onClick={handleLoadMoreArticles}
-                  isLoading={articlesQuery.isLoading && articleItems.length > 0}
-                  hasMore={articleHasMore}
-                />
+                {articleItems.length > 0 ? (
+                  <>
+                    <NewsGrid
+                      items={articleItems}
+                      onItemClick={handleItemClick}
+                      contentType="article"
+                      isStale={articlesQuery.isPlaceholderData}
+                    />
+                    <LoadMoreButton
+                      onClick={handleLoadMoreArticles}
+                      isLoading={articlesQuery.isLoading && articleItems.length > 0}
+                      hasMore={articleHasMore}
+                    />
+                  </>
+                ) : (
+                  !articlesQuery.isLoading && !articlesQuery.isError ? (
+                    <EmptyState
+                      title="No articles yet"
+                      body="Space headlines will appear here when they drop."
+                      expression="sleep"
+                    />
+                  ) : null
+                )}
               </div>
             ) : null}
           </div>
