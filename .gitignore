@@ -41,4 +41,5 @@ tsconfig.tsbuildinfo
 # Misc local-only files
 
 
-/design.superpowers/
+/design
+.superpowers/
