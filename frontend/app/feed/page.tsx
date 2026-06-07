@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 import LoadingState from '../../components/LoadingState'
+import EmptyState from '../../components/EmptyState'
 import Pagination from '../../components/Pagination'
 import ProjectList from '../../components/ProjectList'
 import { useAdaptiveFeedPaginated } from '../../hooks/useAdaptiveFeedPaginated'
@@ -58,16 +59,20 @@ export default function FeedPage() {
         ) : (
           <>
             {projects.length === 0 && !errorMessage ? (
-              <div className="surface-panel surface-panel--empty text-center">
-                <span className="text-3xl">&#x1F30C;</span>
-                <p className="mt-2 text-sm" style={{ color: 'var(--text-secondary)' }}>No feed projects in this sector.</p>
-              </div>
+              <EmptyState
+                title="Your feed is empty"
+                body="Your feed will fill up as new space content drops."
+                expression="wave"
+              />
             ) : null}
 
             {projects.length > 0 ? (
               <div className="space-y-5">
                 <div className="section-heading-row">
-                  <h2 className="section-title">Recommended Missions</h2>
+                  <div>
+                    <span className="page-eyebrow">fresh from orbit 🛰️</span>
+                    <h2 className="section-title">Recommended Missions</h2>
+                  </div>
                   <p className="section-meta">
                     Showing {projects.length} of {totalCount} projects
                   </p>
