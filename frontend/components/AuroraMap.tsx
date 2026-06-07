@@ -48,7 +48,7 @@ export default function AuroraMap({ northBand, southBand, focusSignal }: AuroraM
 
     L.control.zoom({ position: 'bottomright' }).addTo(map)
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
       subdomains: 'abcd',
       attribution:
         '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
@@ -77,17 +77,17 @@ export default function AuroraMap({ northBand, southBand, focusSignal }: AuroraM
     if (northRing.length > 2) {
       const northGroup = L.layerGroup()
       L.polygon(northRing, {
-        color: '#00ff66',
-        opacity: 0.35,
-        fillColor: '#00ff66',
-        fillOpacity: 0.1,
+        color: '#9b7bd6',
+        opacity: 0.5,
+        fillColor: '#9b7bd6',
+        fillOpacity: 0.12,
         weight: 4,
       }).addTo(northGroup)
       L.polygon(northRing, {
-        color: '#7cffb8',
+        color: '#c44d77',
         opacity: 0.95,
-        fillColor: '#3dff96',
-        fillOpacity: 0.28,
+        fillColor: '#5B8DEF',
+        fillOpacity: 0.32,
         weight: 2,
       }).addTo(northGroup)
       northGroup.addTo(map)
@@ -97,17 +97,17 @@ export default function AuroraMap({ northBand, southBand, focusSignal }: AuroraM
     if (southRing.length > 2) {
       const southGroup = L.layerGroup()
       L.polygon(southRing, {
-        color: '#00ff66',
-        opacity: 0.35,
-        fillColor: '#00ff66',
-        fillOpacity: 0.1,
+        color: '#9b7bd6',
+        opacity: 0.5,
+        fillColor: '#9b7bd6',
+        fillOpacity: 0.12,
         weight: 4,
       }).addTo(southGroup)
       L.polygon(southRing, {
-        color: '#7cffb8',
+        color: '#c44d77',
         opacity: 0.95,
-        fillColor: '#3dff96',
-        fillOpacity: 0.28,
+        fillColor: '#5B8DEF',
+        fillOpacity: 0.32,
         weight: 2,
       }).addTo(southGroup)
       southGroup.addTo(map)

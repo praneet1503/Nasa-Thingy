@@ -1,23 +1,23 @@
 'use client'
 
 import { useOrbitalIntelligence } from '../../../hooks/useIntelligence'
-import { IntelCard, Metric, StatusBadge, AlertBanner, IntelSkeleton, IntelError } from '../../../components/intelligence/IntelComponents'
+import { IntelCard, Metric, StatusBadge, AlertBanner, IntelSkeleton, IntelError, CHART_COLORS, CHART_AXIS, CHART_GRID, CHART_TOOLTIP_STYLE } from '../../../components/intelligence/IntelComponents'
 import {
   PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid,
 } from 'recharts'
 
 const ORBIT_COLORS: Record<string, string> = {
-  LEO: '#f2c40d',
-  MEO: '#c58b2f',
-  GEO: '#f59e0b',
-  'Deep Space': '#ef4444',
-  Other: '#64748b',
+  LEO: CHART_COLORS[0],
+  MEO: CHART_COLORS[1],
+  GEO: CHART_COLORS[2],
+  'Deep Space': CHART_COLORS[3],
+  Other: '#8a93b0',
 }
 
 const USAGE_COLORS: Record<string, string> = {
-  Military: '#ef4444',
-  Commercial: '#f2c40d',
-  Civilian: '#22c55e',
+  Military: CHART_COLORS[3],
+  Commercial: CHART_COLORS[0],
+  Civilian: CHART_COLORS[5],
 }
 
 export default function OrbitalIntelligencePage() {
@@ -39,13 +39,13 @@ export default function OrbitalIntelligencePage() {
   const orbitPieData = Object.entries(data.distribution).map(([key, val]) => ({
     name: key,
     value: val.count,
-    fill: ORBIT_COLORS[key] || '#64748b',
+    fill: ORBIT_COLORS[key] || '#8a93b0',
   }))
 
   const usagePieData = Object.entries(data.usage_split).map(([key, val]) => ({
     name: key,
     value: val.count,
-    fill: USAGE_COLORS[key] || '#64748b',
+    fill: USAGE_COLORS[key] || '#8a93b0',
   }))
 
   const orbitBarData = Object.entries(data.distribution).map(([key, val]) => ({
@@ -97,15 +97,7 @@ export default function OrbitalIntelligencePage() {
                     <Cell key={i} fill={entry.fill} />
                   ))}
                 </Pie>
-                <Tooltip
-                  contentStyle={{
-                    background: '#221e10',
-                    border: '1px solid rgba(242,196,13,0.2)',
-                    borderRadius: '8px',
-                    fontSize: 11,
-                    color: '#e2e8f0',
-                  }}
-                />
+                <Tooltip contentStyle={CHART_TOOLTIP_STYLE} />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -138,15 +130,7 @@ export default function OrbitalIntelligencePage() {
                     <Cell key={i} fill={entry.fill} />
                   ))}
                 </Pie>
-                <Tooltip
-                  contentStyle={{
-                    background: '#221e10',
-                    border: '1px solid rgba(242,196,13,0.2)',
-                    borderRadius: '8px',
-                    fontSize: 11,
-                    color: '#e2e8f0',
-                  }}
-                />
+                <Tooltip contentStyle={CHART_TOOLTIP_STYLE} />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -165,21 +149,13 @@ export default function OrbitalIntelligencePage() {
         <div className="h-56 mt-2">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={orbitBarData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.08)" />
-              <XAxis dataKey="orbit" tick={{ fill: '#64748b', fontSize: 10 }} axisLine={{ stroke: 'rgba(148,163,184,0.12)' }} />
-              <YAxis tick={{ fill: '#64748b', fontSize: 10 }} axisLine={{ stroke: 'rgba(148,163,184,0.12)' }} />
-              <Tooltip
-                contentStyle={{
-                  background: '#221e10',
-                  border: '1px solid rgba(242,196,13,0.2)',
-                  borderRadius: '8px',
-                  fontSize: 11,
-                  color: '#e2e8f0',
-                }}
-              />
+              <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID} />
+              <XAxis dataKey="orbit" tick={{ fill: CHART_AXIS, fontSize: 10 }} axisLine={{ stroke: CHART_GRID }} />
+              <YAxis tick={{ fill: CHART_AXIS, fontSize: 10 }} axisLine={{ stroke: CHART_GRID }} />
+              <Tooltip contentStyle={CHART_TOOLTIP_STYLE} />
               <Bar dataKey="count" radius={[4, 4, 0, 0]}>
                 {orbitBarData.map((entry) => (
-                  <Cell key={entry.orbit} fill={ORBIT_COLORS[entry.orbit] || '#64748b'} fillOpacity={0.85} />
+                  <Cell key={entry.orbit} fill={ORBIT_COLORS[entry.orbit] || '#8a93b0'} fillOpacity={0.85} />
                 ))}
               </Bar>
             </BarChart>

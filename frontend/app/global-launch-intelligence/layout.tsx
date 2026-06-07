@@ -5,14 +5,14 @@ import { usePathname } from 'next/navigation'
 import { type ReactNode, useState } from 'react'
 
 const NAV_ITEMS = [
-  { href: '/global-launch-intelligence/dashboard', label: 'COMMAND CENTER', icon: '◆' },
-  { href: '/global-launch-intelligence/launch-velocity', label: 'LAUNCH VELOCITY', icon: '▲' },
-  { href: '/global-launch-intelligence/agency-dominance', label: 'AGENCY DOMINANCE', icon: '◉' },
-  { href: '/global-launch-intelligence/orbital-intelligence', label: 'ORBITAL INTEL', icon: '◎' },
-  { href: '/global-launch-intelligence/mission-classification', label: 'MISSION CLASS', icon: '▣' },
-  { href: '/global-launch-intelligence/astronaut-activity', label: 'ASTRONAUT OPS', icon: '☆' },
-  { href: '/global-launch-intelligence/station-traffic', label: 'STATION TRAFFIC', icon: '⬡' },
-  { href: '/global-launch-intelligence/geopolitical-map', label: 'GEO MAP', icon: '⊕' },
+  { href: '/global-launch-intelligence/dashboard', label: 'Command Center', icon: '🛰️' },
+  { href: '/global-launch-intelligence/launch-velocity', label: 'Launch Velocity', icon: '🚀' },
+  { href: '/global-launch-intelligence/agency-dominance', label: 'Agency Dominance', icon: '🏆' },
+  { href: '/global-launch-intelligence/orbital-intelligence', label: 'Orbital Intel', icon: '🌍' },
+  { href: '/global-launch-intelligence/mission-classification', label: 'Mission Class', icon: '🗂️' },
+  { href: '/global-launch-intelligence/astronaut-activity', label: 'Astronaut Ops', icon: '👩‍🚀' },
+  { href: '/global-launch-intelligence/station-traffic', label: 'Station Traffic', icon: '🛰️' },
+  { href: '/global-launch-intelligence/geopolitical-map', label: 'Geo Map', icon: '🗺️' },
 ]
 
 export default function IntelligenceLayout({ children }: { children: ReactNode }) {
@@ -25,9 +25,9 @@ export default function IntelligenceLayout({ children }: { children: ReactNode }
         <nav className={`intel-sidebar ${collapsed ? 'intel-sidebar-collapsed' : ''}`}>
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="w-full text-left px-3 py-2 text-[10px] text-[var(--text-muted)] hover:text-[var(--text-secondary)] uppercase tracking-wider transition-colors"
+            className="w-full text-left px-3 py-2 text-xs font-display text-inkmute hover:text-navy transition-colors"
           >
-            {collapsed ? '▸' : '▾ MODULES'}
+            {collapsed ? '▸' : '▾ Sections'}
           </button>
 
           {!collapsed && NAV_ITEMS.map((item) => {

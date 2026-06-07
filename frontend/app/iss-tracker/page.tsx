@@ -7,6 +7,8 @@ import Link from 'next/link'
 
 import { fetchIssLocation, getApiIssWsUrl } from '../../lib/api'
 import type { IssLocation } from '../../lib/types'
+import LoadingState from '../../components/LoadingState'
+import EmptyState from '../../components/EmptyState'
 
 type IssTrackerState = {
   data: IssLocation | null
@@ -52,9 +54,9 @@ export default function IssTrackerPage() {
     let reconnectTimer: number | null = null
 
     const connect = () => {
-      const wsUrl = `${getApiIssWsUrl()}/iss/stream`
       setWsStatus(reconnectAttempts > 0 ? 'reconnecting' : 'connecting')
       try {
+        const wsUrl = `${getApiIssWsUrl()}/iss/stream`
         ws = new WebSocket(wsUrl)
       } catch (e) {
         setWsStatus('reconnecting')
@@ -122,13 +124,9 @@ export default function IssTrackerPage() {
   return (
     <main className="mx-auto w-full max-w-4xl px-4 py-10">
       <header className="mb-8 relative">
-        <h1
-          className="text-3xl font-semibold font-mono tracking-wide"
-          style={{ color: 'var(--accent)' }}
-        >
-          ISS Live Tracker
-        </h1>
-        <p className="mt-2 text-sm font-mono" style={{ color: 'var(--text-secondary)' }}>
+        <span className="page-eyebrow">where&apos;s the station right now? 🛰️</span>
+        <h1 className="page-title">ISS Live Tracker</h1>
+        <p className="mt-2 text-sm text-inkmute">
           Real-time ISS tracker
         </p>
         <Link href="/" className="absolute right-0 top-0 space-btn" aria-label="Back to home">
@@ -137,7 +135,7 @@ export default function IssTrackerPage() {
       </header>
 
       {!hasReceivedFirstWsMessage ? (
-        <div className="mb-4 flex items-center gap-3 space-glass rounded-xl p-4 font-mono text-sm" style={{ color: 'var(--text-secondary)' }}>
+        <div className="mb-4 flex items-center gap-3 space-glass rounded-xl p-4 text-sm text-inkmute">
           <span
             className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
             aria-hidden="true"
@@ -152,19 +150,16 @@ export default function IssTrackerPage() {
         </div>
       ) : null}
 
-      {loading ? (
-        <div className="space-glass rounded-xl p-6 font-mono text-sm" style={{ color: 'var(--text-secondary)' }}>
-          Loading ISS telemetry...
-        </div>
+      {loading && !error ? (
+        <LoadingState label="Loading ISS telemetry…" />
       ) : null}
 
       {!loading && error ? (
-        <div
-          className="space-glass rounded-xl p-6 font-mono text-sm"
-          style={{ borderColor: 'rgba(239,68,68,0.3)', color: '#fca5a5' }}
-        >
-          {error}
-        </div>
+        <EmptyState
+          title="ISS data is offline"
+          body="We couldn't reach the live ISS feed right now. We'll keep trying to reconnect."
+          expression="wave"
+        />
       ) : null}
 
       {!loading && !error && data ? (

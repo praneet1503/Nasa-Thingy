@@ -2,6 +2,7 @@
 import { useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import LoadingState from '../../../components/LoadingState'
+import Doodle from '../../../components/brand/Doodle'
 import { useProject } from '../../../src/hooks/useProject'
 
 function formatDate(d: string | null) {
@@ -34,7 +35,7 @@ export default function ProjectDetailPage() {
     <main className="mx-auto w-full max-w-4xl px-4 py-10">
       <div className="mb-6 flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2">
-          <h1 className="text-xl font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>Mission Details</h1>
+          <h1 className="text-xl font-bold tracking-tight text-navy">Mission Details</h1>
         </div>
 
         <div className="flex gap-2">
@@ -80,59 +81,62 @@ export default function ProjectDetailPage() {
 
       {!isLoading && !isError && !project ? (
         <div className="space-glass p-6 text-center">
-          <h2 className="mt-2 text-base font-semibold" style={{ color: 'var(--text-primary)' }}>Mission Not Found</h2>
-          <p className="mt-1 text-sm" style={{ color: 'var(--text-secondary)' }}>This mission does not exist in the database (or is classified).</p>
+          <h2 className="mt-2 text-base font-semibold text-navy">Mission Not Found</h2>
+          <p className="mt-1 text-sm text-inkmute">This mission does not exist in the database (or is classified).</p>
         </div>
       ) : null}
 
       {!isLoading && project ? (
         <div className="space-glass p-6">
           <div className="flex items-center gap-2">
-            <h2 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>{project.title}</h2>
+            <h2 className="text-lg font-bold text-navy">{project.title}</h2>
           </div>
 
           <div className="mt-4 grid grid-cols-1 gap-3 text-sm md:grid-cols-2">
             <div className="space-card p-3">
-              <div className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Status</div>
-              <div className="mt-1" style={{ color: 'var(--text-primary)' }}>{valueOrDash(project.status)}</div>
+              <div className="text-xs font-medium text-inkfaint">Status</div>
+              <div className="mt-1 text-navy">{valueOrDash(project.status)}</div>
             </div>
             <div className="space-card p-3">
-              <div className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>TRL Level</div>
-              <div className="mt-1" style={{ color: 'var(--text-primary)' }}>{valueOrDash(project.trl)}</div>
+              <div className="text-xs font-medium text-inkfaint">TRL Level</div>
+              <div className="mt-1 text-navy">{valueOrDash(project.trl)}</div>
             </div>
             <div className="space-card p-3">
-              <div className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Organization</div>
-              <div className="mt-1" style={{ color: 'var(--text-primary)' }}>{valueOrDash(project.organization)}</div>
+              <div className="text-xs font-medium text-inkfaint">Organization</div>
+              <div className="mt-1 text-navy">{valueOrDash(project.organization)}</div>
             </div>
             <div className="space-card p-3">
-              <div className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Technology Area</div>
-              <div className="mt-1" style={{ color: 'var(--text-primary)' }}>{valueOrDash(project.technology_area)}</div>
+              <div className="text-xs font-medium text-inkfaint">Technology Area</div>
+              <div className="mt-1 text-navy">{valueOrDash(project.technology_area)}</div>
             </div>
             <div className="space-card p-3">
-              <div className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Launch Date</div>
-              <div className="mt-1" style={{ color: 'var(--text-primary)' }}>{formatDate(project.start_date)}</div>
+              <div className="text-xs font-medium text-inkfaint">Launch Date</div>
+              <div className="mt-1 text-navy">{formatDate(project.start_date)}</div>
             </div>
             <div className="space-card p-3">
-              <div className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>End Date</div>
-              <div className="mt-1" style={{ color: 'var(--text-primary)' }}>{formatDate(project.end_date)}</div>
+              <div className="text-xs font-medium text-inkfaint">End Date</div>
+              <div className="mt-1 text-navy">{formatDate(project.end_date)}</div>
             </div>
+          </div>
+
+          <div aria-hidden style={{ display: 'flex', justifyContent: 'center', margin: '1.5rem 0' }}>
+            <Doodle name="shooting-star" color="#9B7BD6" />
           </div>
 
           <div className="mt-5">
-            <div className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Mission Brief</div>
+            <div className="text-xs font-medium text-inkfaint">Mission Brief</div>
             {project.description ? (
-              <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{project.description}</p>
+              <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-inkmute">{project.description}</p>
             ) : (
-              <p className="mt-2 text-sm" style={{ color: 'var(--text-muted)' }}>No mission brief available.</p>
+              <p className="mt-2 text-sm text-inkfaint">No mission brief available.</p>
             )}
           </div>
 
-          <div className="mt-5 text-xs" style={{ color: 'var(--text-muted)' }}>
-            Last telemetry: <span style={{ color: 'var(--text-secondary)' }}>{valueOrDash(project.last_updated)}</span>
+          <div className="mt-5 text-xs text-inkfaint">
+            Last telemetry: <span className="text-inkmute">{valueOrDash(project.last_updated)}</span>
           </div>
         </div>
       ) : null}
     </main>
   )
 }
-

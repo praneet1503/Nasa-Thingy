@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useFullDashboard } from '../../../hooks/useIntelligence'
 import {
   IntelCard, Metric, IndexGauge, StatusBadge, AlertBanner,
-  IntelSkeleton, IntelError,
+  IntelSkeleton, IntelError, CHART_COLORS, CHART_TOOLTIP_STYLE,
 } from '../../../components/intelligence/IntelComponents'
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
@@ -12,7 +12,7 @@ import {
 } from 'recharts'
 
 const ORBIT_COLORS: Record<string, string> = {
-  LEO: '#f2c40d', MEO: '#c58b2f', GEO: '#f59e0b', 'Deep Space': '#ef4444', Other: '#64748b',
+  LEO: CHART_COLORS[0], MEO: CHART_COLORS[1], GEO: CHART_COLORS[2], 'Deep Space': CHART_COLORS[3], Other: '#8a93b0',
 }
 
 export default function DashboardPage() {
@@ -48,7 +48,7 @@ export default function DashboardPage() {
   const { velocity, agencies, orbital, missions, astronauts, stations, geopolitics, indices } = data
 
   const orbitPieData = Object.entries(orbital.distribution).map(([key, val]) => ({
-    name: key, value: val.count, fill: ORBIT_COLORS[key] || '#64748b',
+    name: key, value: val.count, fill: ORBIT_COLORS[key] || '#8a93b0',
   }))
 
   return (
@@ -110,11 +110,11 @@ export default function DashboardPage() {
                 <AreaChart data={velocity.daily_timeline}>
                   <defs>
                     <linearGradient id="miniVelocityGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#f2c40d" stopOpacity={0.2} />
-                      <stop offset="95%" stopColor="#f2c40d" stopOpacity={0} />
+                      <stop offset="5%" stopColor={CHART_COLORS[0]} stopOpacity={0.2} />
+                      <stop offset="95%" stopColor={CHART_COLORS[0]} stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <Area type="monotone" dataKey="launches" stroke="#f2c40d" strokeWidth={1.5} fill="url(#miniVelocityGrad)" dot={false} />
+                  <Area type="monotone" dataKey="launches" stroke={CHART_COLORS[0]} strokeWidth={1.5} fill="url(#miniVelocityGrad)" dot={false} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -150,7 +150,7 @@ export default function DashboardPage() {
                   <Pie data={orbitPieData} cx="50%" cy="50%" innerRadius={30} outerRadius={55} paddingAngle={3} dataKey="value" stroke="none">
                     {orbitPieData.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
                   </Pie>
-                  <Tooltip contentStyle={{ background: '#221e10', border: '1px solid rgba(242,196,13,0.2)', borderRadius: '8px', fontSize: 10, color: '#e2e8f0' }} />
+                  <Tooltip contentStyle={CHART_TOOLTIP_STYLE} />
                 </PieChart>
               </ResponsiveContainer>
             </div>

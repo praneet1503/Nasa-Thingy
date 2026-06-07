@@ -1,12 +1,12 @@
 'use client'
 
 import { useGeopoliticalData } from '../../../hooks/useIntelligence'
-import { IntelCard, Metric, StatusBadge, AlertBanner, IntelSkeleton, IntelError } from '../../../components/intelligence/IntelComponents'
+import { IntelCard, Metric, StatusBadge, AlertBanner, IntelSkeleton, IntelError, CHART_COLORS, CHART_AXIS, CHART_GRID, CHART_TOOLTIP_STYLE } from '../../../components/intelligence/IntelComponents'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
 } from 'recharts'
 
-const BAR_COLORS = ['#f2c40d', '#c58b2f', '#f59e0b', '#22c55e', '#ef4444', '#6366f1', '#ec4899', '#14b8a6', '#f97316', '#84cc16']
+const BAR_COLORS = CHART_COLORS
 
 export default function GeopoliticalMapPage() {
   const { data, isLoading, error, refetch } = useGeopoliticalData()
@@ -62,25 +62,17 @@ export default function GeopoliticalMapPage() {
           <div className="h-80 mt-2">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data.country_leaderboard.slice(0, 10)} layout="vertical" barCategoryGap="18%">
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.08)" horizontal={false} />
-                <XAxis type="number" tick={{ fill: '#64748b', fontSize: 10 }} axisLine={{ stroke: 'rgba(148,163,184,0.12)' }} />
+                <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID} horizontal={false} />
+                <XAxis type="number" tick={{ fill: CHART_AXIS, fontSize: 10 }} axisLine={{ stroke: CHART_GRID }} />
                 <YAxis
                   dataKey="country"
                   type="category"
                   width={50}
-                  tick={{ fill: '#94a3b8', fontSize: 10 }}
+                  tick={{ fill: CHART_AXIS, fontSize: 10 }}
                   axisLine={false}
                   tickLine={false}
                 />
-                <Tooltip
-                  contentStyle={{
-                    background: '#221e10',
-                    border: '1px solid rgba(242,196,13,0.2)',
-                    borderRadius: '8px',
-                    fontSize: 11,
-                    color: '#e2e8f0',
-                  }}
-                />
+                <Tooltip contentStyle={CHART_TOOLTIP_STYLE} />
                 <Bar dataKey="launches" radius={[0, 4, 4, 0]}>
                   {data.country_leaderboard.slice(0, 10).map((_, i) => (
                     <Cell key={i} fill={BAR_COLORS[i % BAR_COLORS.length]} fillOpacity={0.85} />
@@ -94,7 +86,7 @@ export default function GeopoliticalMapPage() {
         <IntelCard title="Top Launch Facilities">
           <div className="space-y-2 mt-2 max-h-80 overflow-y-auto pr-1">
             {data.site_leaderboard.map((site, i) => (
-              <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-[var(--space-deep)] border border-[var(--border)]/50">
+              <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-[var(--cream-sunk)] border border-[var(--border)]/50">
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="text-xs font-mono text-[var(--accent)] w-6">#{i + 1}</span>
                   <div className="min-w-0">
@@ -168,7 +160,7 @@ export default function GeopoliticalMapPage() {
                   return (
                     <tr
                       key={i}
-                      className="border-b border-[var(--border)]/50 hover:bg-[var(--space-elevated)]/50 transition-colors"
+                      className="border-b border-[var(--border)]/50 transition-colors"
                     >
                       <td className="intel-td text-xs">{site.name}</td>
                       <td className="intel-td text-[var(--text-muted)]">

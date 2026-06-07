@@ -37,6 +37,12 @@ function ProjectCard({ project, onProjectClick }: ProjectCardProps) {
     >
       <div className="project-card__header">
         <div className="project-card__lead">
+          <span className="project-card__icon" aria-hidden>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="7" fill="#4A90D9" />
+              <ellipse cx="12" cy="13" rx="11" ry="3.4" stroke="#FFC23C" strokeWidth="2" transform="rotate(-18 12 13)" />
+            </svg>
+          </span>
           <div className="project-card__title-group">
             <span className="project-card__eyebrow">{valueOrDash(project.organization)}</span>
             <h3 className="project-card__title">{project.title}</h3>

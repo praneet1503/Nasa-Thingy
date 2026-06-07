@@ -1,20 +1,15 @@
-type LoadingStateProps = {
-  label?: string
-}
+import Mascot from './brand/Mascot'
 
-export default function LoadingState({ label = 'Loading…' }: LoadingStateProps) {
+type LoadingStateProps = { label?: string }
+
+export default function LoadingState({ label = 'Loading the cosmos…' }: LoadingStateProps) {
   return (
     <div className="loading-panel">
-      <div className="orbit-loader">
-        <div className="ring" />
-        <div className="ring" />
-        <div className="ring" />
-        <div className="planet" />
-      </div>
+      <Mascot size={56} expression="read" bob aria-hidden />
       <div className="loading-panel__copy">
-        <span className="loading-panel__eyebrow">Signal handshake</span>
+        <span className="loading-panel__eyebrow">hang tight</span>
         <p className="loading-panel__title">{label}</p>
-        <p className="loading-panel__body">Transmitting from deep space through the Nasapedia command grid…</p>
+        <p className="loading-panel__body">Nova is fetching fresh space data for you…</p>
       </div>
     </div>
   )

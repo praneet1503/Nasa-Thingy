@@ -1,5 +1,17 @@
 'use client'
 import { type ReactNode } from 'react'
+
+export const CHART_COLORS = ['#5B8DEF', '#4A90D9', '#FFC23C', '#F58BB0', '#9B7BD6', '#2fa37a']
+export const CHART_AXIS = '#8a93b0'
+export const CHART_GRID = 'rgba(27,42,107,0.08)'
+export const CHART_TEXT = '#1b2a6b'
+export const CHART_TOOLTIP_STYLE = {
+  background: '#FDF9F0',
+  border: '1.5px solid #ece3cf',
+  borderRadius: '8px',
+  fontSize: 10,
+  color: '#1b2a6b',
+} as const
 type IntelCardProps = {
   title: string
   subtitle?: string
@@ -67,7 +79,7 @@ export function Metric({ label, value, unit, trend, trendValue, size = 'md' }: M
         </span>
         {unit && <span className="text-xs text-[var(--text-muted)]">{unit}</span>}
         {trend && trendValue && (
-          <span className={`text-xs font-mono ${trend === 'up' ? 'text-emerald-400' : trend === 'down' ? 'text-red-400' : 'text-[var(--text-muted)]'}`}>
+          <span className={`text-xs font-mono ${trend === 'up' ? 'text-emerald-600' : trend === 'down' ? 'text-red-600' : 'text-[var(--text-muted)]'}`}>
             {trend === 'up' ? '▲' : trend === 'down' ? '▼' : '─'} {trendValue}
           </span>
         )}
@@ -82,11 +94,11 @@ type StatusBadgeProps = {
 }
 
 const BADGE_STYLES = {
-  green: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/25',
-  yellow: 'bg-amber-500/15 text-amber-400 border-amber-500/25',
-  red: 'bg-red-500/15 text-red-400 border-red-500/25',
-  gold: 'bg-amber-500/15 text-amber-400 border-amber-500/25',
-  purple: 'bg-purple-500/15 text-purple-400 border-purple-500/25',
+  green: 'bg-emerald-500/15 text-emerald-700 border-emerald-500/30',
+  yellow: 'bg-amber-500/15 text-amber-700 border-amber-500/30',
+  red: 'bg-red-500/15 text-red-600 border-red-500/30',
+  gold: 'bg-amber-500/15 text-amber-700 border-amber-500/30',
+  purple: 'bg-purple-500/15 text-purple-700 border-purple-500/30',
 }
 
 export function StatusBadge({ label, variant }: StatusBadgeProps) {
@@ -105,7 +117,7 @@ type IndexGaugeProps = {
 }
 
 export function IndexGauge({ label, value, icon }: IndexGaugeProps) {
-  const color = value >= 70 ? 'var(--danger)' : value >= 40 ? 'var(--warm)' : 'var(--accent)'
+  const color = value >= 70 ? 'var(--danger)' : value >= 40 ? 'var(--gold-deep)' : 'var(--corn)'
   const percentage = Math.min(Math.max(value, 0), 100)
 
   return (
@@ -119,7 +131,7 @@ export function IndexGauge({ label, value, icon }: IndexGaugeProps) {
           {value.toFixed(1)}
         </span>
       </div>
-      <div className="h-1.5 rounded-full bg-[var(--space-deep)] overflow-hidden">
+      <div className="h-1.5 rounded-full bg-[var(--cream-sunk)] overflow-hidden">
         <div
           className="h-full rounded-full transition-all duration-700"
           style={{
@@ -140,10 +152,10 @@ type AlertBannerProps = {
 }
 
 const ALERT_STYLES = {
-  surge: 'border-amber-500/30 bg-amber-500/8 text-amber-300',
-  escalation: 'border-red-500/30 bg-red-500/8 text-red-300',
-  expansion: 'border-amber-500/30 bg-amber-500/8 text-amber-300',
-  info: 'border-[var(--border)] bg-[var(--space-surface)] text-[var(--text-secondary)]',
+  surge: 'intel-alert-surge',
+  escalation: 'intel-alert-escalation',
+  expansion: 'intel-alert-expansion',
+  info: 'border-[var(--border)] bg-[var(--cream-sunk)] text-[var(--text-secondary)]',
 }
 
 const ALERT_ICONS = {
@@ -155,7 +167,7 @@ const ALERT_ICONS = {
 
 export function AlertBanner({ message, type }: AlertBannerProps) {
   return (
-    <div className={`flex items-center gap-2 px-3 py-2 rounded-lg border text-xs font-mono tracking-wide ${ALERT_STYLES[type]}`}>
+    <div className={`intel-alert ${ALERT_STYLES[type]}`}>
       <span>{ALERT_ICONS[type]}</span>
       <span className="uppercase">{message}</span>
     </div>
@@ -166,7 +178,7 @@ export function IntelSkeleton({ rows = 3 }: { rows?: number }) {
   return (
     <div className="space-y-3 animate-pulse">
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="h-4 rounded bg-[var(--space-elevated)]" style={{ width: `${80 - i * 15}%` }} />
+        <div key={i} className="h-4 rounded bg-[var(--cream-sunk)]" style={{ width: `${80 - i * 15}%` }} />
       ))}
     </div>
   )

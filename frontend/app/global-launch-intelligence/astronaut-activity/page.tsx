@@ -1,12 +1,12 @@
 'use client'
 
 import { useAstronautActivity } from '../../../hooks/useIntelligence'
-import { IntelCard, Metric, IndexGauge, IntelSkeleton, IntelError } from '../../../components/intelligence/IntelComponents'
+import { IntelCard, Metric, IndexGauge, IntelSkeleton, IntelError, CHART_COLORS, CHART_AXIS, CHART_GRID, CHART_TOOLTIP_STYLE } from '../../../components/intelligence/IntelComponents'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
 } from 'recharts'
 
-const AGENCY_COLORS = ['#f2c40d', '#c58b2f', '#f59e0b', '#22c55e', '#ef4444', '#6366f1', '#ec4899', '#14b8a6']
+const AGENCY_COLORS = CHART_COLORS
 
 export default function AstronautActivityPage() {
   const { data, isLoading, error, refetch } = useAstronautActivity()
@@ -50,25 +50,17 @@ export default function AstronautActivityPage() {
           <div className="h-72 mt-2">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data.agency_breakdown} layout="vertical" barCategoryGap="18%">
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.08)" horizontal={false} />
-                <XAxis type="number" tick={{ fill: '#64748b', fontSize: 10 }} axisLine={{ stroke: 'rgba(148,163,184,0.12)' }} />
+                <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID} horizontal={false} />
+                <XAxis type="number" tick={{ fill: CHART_AXIS, fontSize: 10 }} axisLine={{ stroke: CHART_GRID }} />
                 <YAxis
                   dataKey="agency"
                   type="category"
                   width={120}
-                  tick={{ fill: '#94a3b8', fontSize: 10 }}
+                  tick={{ fill: CHART_AXIS, fontSize: 10 }}
                   axisLine={false}
                   tickLine={false}
                 />
-                <Tooltip
-                  contentStyle={{
-                    background: '#221e10',
-                    border: '1px solid rgba(242,196,13,0.2)',
-                    borderRadius: '8px',
-                    fontSize: 11,
-                    color: '#e2e8f0',
-                  }}
-                />
+                <Tooltip contentStyle={CHART_TOOLTIP_STYLE} />
                 <Bar dataKey="count" radius={[0, 4, 4, 0]}>
                   {data.agency_breakdown.map((_, i) => (
                     <Cell key={i} fill={AGENCY_COLORS[i % AGENCY_COLORS.length]} fillOpacity={0.85} />
@@ -85,7 +77,7 @@ export default function AstronautActivityPage() {
           ) : (
             <div className="space-y-3 mt-2 max-h-72 overflow-y-auto pr-1">
               {data.upcoming_crewed_missions.map((mission, i) => (
-                <div key={i} className="flex gap-3 items-start p-2 rounded-lg bg-[var(--space-deep)] border border-[var(--border)]/50">
+                <div key={i} className="flex gap-3 items-start p-2 rounded-lg bg-[var(--cream-sunk)] border border-[var(--border)]/50">
                   <div className="w-8 h-8 rounded-full bg-[var(--accent)]/10 flex items-center justify-center flex-shrink-0">
                     <span className="text-[var(--accent)] text-[10px] font-semibold">LA</span>
                   </div>
@@ -108,8 +100,8 @@ export default function AstronautActivityPage() {
       <IntelCard title="Active Astronaut Roster">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mt-2 max-h-96 overflow-y-auto pr-1">
           {data.astronauts.map((astro, i) => (
-            <div key={i} className="flex items-center gap-2 p-2 rounded-lg bg-[var(--space-deep)] border border-[var(--border)]/50">
-              <div className="w-8 h-8 rounded-full bg-[var(--space-elevated)] flex items-center justify-center flex-shrink-0 overflow-hidden">
+            <div key={i} className="flex items-center gap-2 p-2 rounded-lg bg-[var(--cream-sunk)] border border-[var(--border)]/50">
+              <div className="w-8 h-8 rounded-full bg-[rgba(91,141,239,0.12)] flex items-center justify-center flex-shrink-0 overflow-hidden">
                 {astro.profile_image ? (
                   <img src={astro.profile_image} alt="" className="w-full h-full object-cover rounded-full" />
                 ) : (

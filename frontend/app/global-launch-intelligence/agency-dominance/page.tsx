@@ -2,13 +2,13 @@
 
 import { useState } from 'react'
 import { useAgencyDominance } from '../../../hooks/useIntelligence'
-import { IntelCard, Metric, StatusBadge, IntelSkeleton, IntelError } from '../../../components/intelligence/IntelComponents'
+import { IntelCard, Metric, StatusBadge, IntelSkeleton, IntelError, CHART_COLORS, CHART_AXIS, CHART_GRID, CHART_TOOLTIP_STYLE } from '../../../components/intelligence/IntelComponents'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
   PieChart, Pie,
 } from 'recharts'
 
-const BAR_COLORS = ['#f2c40d', '#c58b2f', '#f59e0b', '#22c55e', '#ef4444', '#6366f1', '#ec4899']
+const BAR_COLORS = CHART_COLORS
 
 export default function AgencyDominancePage() {
   const [days, setDays] = useState(90)
@@ -28,8 +28,8 @@ export default function AgencyDominancePage() {
   }
 
   const pieData = [
-    { name: 'State', value: data.state_launches, fill: '#c58b2f' },
-    { name: 'Private', value: data.private_launches, fill: '#f2c40d' },
+    { name: 'State', value: data.state_launches, fill: CHART_COLORS[4] },
+    { name: 'Private', value: data.private_launches, fill: CHART_COLORS[0] },
   ]
 
   return (
@@ -74,24 +74,18 @@ export default function AgencyDominancePage() {
           <div className="h-72 mt-2">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data.top_5} layout="vertical" barCategoryGap="20%">
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.08)" horizontal={false} />
-                <XAxis type="number" tick={{ fill: '#64748b', fontSize: 10 }} axisLine={{ stroke: 'rgba(148,163,184,0.12)' }} />
+                <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID} horizontal={false} />
+                <XAxis type="number" tick={{ fill: CHART_AXIS, fontSize: 10 }} axisLine={{ stroke: CHART_GRID }} />
                 <YAxis
                   dataKey="name"
                   type="category"
                   width={140}
-                  tick={{ fill: '#94a3b8', fontSize: 10 }}
+                  tick={{ fill: CHART_AXIS, fontSize: 10 }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <Tooltip
-                  contentStyle={{
-                    background: '#221e10',
-                    border: '1px solid rgba(242,196,13,0.2)',
-                    borderRadius: '8px',
-                    fontSize: 11,
-                    color: '#e2e8f0',
-                  }}
+                  contentStyle={CHART_TOOLTIP_STYLE}
                   formatter={(value: number, name: string) => {
                     if (name === 'total_launches') return [value, 'Launches']
                     return [value, name]
@@ -125,25 +119,17 @@ export default function AgencyDominancePage() {
                     <Cell key={i} fill={entry.fill} />
                   ))}
                 </Pie>
-                <Tooltip
-                  contentStyle={{
-                    background: '#221e10',
-                    border: '1px solid rgba(242,196,13,0.2)',
-                    borderRadius: '8px',
-                    fontSize: 11,
-                    color: '#e2e8f0',
-                  }}
-                />
+                <Tooltip contentStyle={CHART_TOOLTIP_STYLE} />
               </PieChart>
             </ResponsiveContainer>
           </div>
           <div className="flex justify-center gap-4 mt-2">
             <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-purple-500" />
+              <span className="w-2.5 h-2.5 rounded-full" style={{ background: CHART_COLORS[4] }} />
               <span className="text-[10px] text-[var(--text-muted)] uppercase">State {data.state_share_percent}%</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-cyan-400" />
+              <span className="w-2.5 h-2.5 rounded-full" style={{ background: CHART_COLORS[0] }} />
               <span className="text-[10px] text-[var(--text-muted)] uppercase">Private {data.private_share_percent}%</span>
             </div>
           </div>
@@ -165,7 +151,7 @@ export default function AgencyDominancePage() {
             </thead>
             <tbody>
               {data.full_leaderboard.map((agency, i) => (
-                <tr key={agency.name} className="border-b border-[var(--border)]/50 hover:bg-[var(--space-elevated)]/50 transition-colors">
+                <tr key={agency.name} className="border-b border-[var(--border)]/50 transition-colors">
                   <td className="intel-td font-mono text-[var(--accent)]">#{i + 1}</td>
                   <td className="intel-td font-medium">{agency.name}</td>
                   <td className="intel-td font-mono">{agency.total_launches}</td>
