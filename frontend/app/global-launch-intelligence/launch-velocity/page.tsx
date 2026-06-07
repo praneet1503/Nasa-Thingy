@@ -1,7 +1,7 @@
 'use client'
 
 import { useLaunchVelocity } from '../../../hooks/useIntelligence'
-import { IntelCard, Metric, StatusBadge, AlertBanner, IntelSkeleton, IntelError } from '../../../components/intelligence/IntelComponents'
+import { IntelCard, Metric, StatusBadge, AlertBanner, IntelSkeleton, IntelError, CHART_COLORS, CHART_AXIS, CHART_GRID, CHART_TOOLTIP_STYLE } from '../../../components/intelligence/IntelComponents'
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts'
@@ -89,39 +89,31 @@ export default function LaunchVelocityPage() {
             <AreaChart data={data.daily_timeline}>
               <defs>
                 <linearGradient id="velocityGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#f2c40d" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#f2c40d" stopOpacity={0} />
+                  <stop offset="5%" stopColor={CHART_COLORS[0]} stopOpacity={0.3} />
+                  <stop offset="95%" stopColor={CHART_COLORS[0]} stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.08)" />
+              <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID} />
               <XAxis
                 dataKey="date"
-                tick={{ fill: '#64748b', fontSize: 10 }}
+                tick={{ fill: CHART_AXIS, fontSize: 10 }}
                 tickFormatter={(d: string) => d.slice(5)}
-                axisLine={{ stroke: 'rgba(148,163,184,0.12)' }}
+                axisLine={{ stroke: CHART_GRID }}
               />
               <YAxis
-                tick={{ fill: '#64748b', fontSize: 10 }}
-                axisLine={{ stroke: 'rgba(148,163,184,0.12)' }}
+                tick={{ fill: CHART_AXIS, fontSize: 10 }}
+                axisLine={{ stroke: CHART_GRID }}
                 allowDecimals={false}
               />
-              <Tooltip
-                contentStyle={{
-                  background: '#221e10',
-                  border: '1px solid rgba(242,196,13,0.2)',
-                  borderRadius: '8px',
-                  fontSize: 11,
-                  color: '#e2e8f0',
-                }}
-              />
+              <Tooltip contentStyle={CHART_TOOLTIP_STYLE} />
               <Area
                 type="monotone"
                 dataKey="launches"
-                stroke="#f2c40d"
+                stroke={CHART_COLORS[0]}
                 strokeWidth={2}
                 fill="url(#velocityGrad)"
                 dot={false}
-                activeDot={{ r: 4, stroke: '#f2c40d', strokeWidth: 2, fill: '#221e10' }}
+                activeDot={{ r: 4, stroke: CHART_COLORS[0], strokeWidth: 2, fill: '#fff' }}
               />
             </AreaChart>
           </ResponsiveContainer>

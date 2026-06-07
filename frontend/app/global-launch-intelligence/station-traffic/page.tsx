@@ -73,7 +73,7 @@ export default function StationTrafficPage() {
                   <span className="text-[9px] uppercase tracking-wider text-[var(--text-muted)]">Docked Spacecraft</span>
                   <div className="mt-1 space-y-1">
                     {station.docked_vehicles.map((vehicle, vIndex) => (
-                      <div key={vIndex} className="flex items-center justify-between py-1 px-2 rounded bg-[var(--space-deep)] border border-[var(--border)]/50">
+                      <div key={vIndex} className="flex items-center justify-between py-1 px-2 rounded bg-[var(--cream-sunk)] border border-[var(--border)]/50">
                         <span className="text-[11px] text-[var(--text-primary)]">{vehicle.name}</span>
                         <div className="flex gap-2">
                           {vehicle.docking_date && (
