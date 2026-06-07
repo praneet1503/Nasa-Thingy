@@ -4,6 +4,8 @@ import { useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 
 import { useAuroraData } from '../../hooks/useAuroraData'
+import LoadingState from '../../components/LoadingState'
+import EmptyState from '../../components/EmptyState'
 
 type RegionRule = {
   region: string
@@ -36,10 +38,10 @@ function classifyChance(kp: number, minKp: number): { label: string; percent: nu
 }
 
 function kpState(kp: number): { label: string; color: string } {
-  if (kp >= 7) return { label: 'Storm', color: '#fb7185' }
-  if (kp >= 5) return { label: 'Active', color: '#f59e0b' }
-  if (kp >= 3) return { label: 'Unsettled', color: '#facc15' }
-  return { label: 'Quiet', color: '#34d399' }
+  if (kp >= 7) return { label: 'Storm', color: '#c44d77' }
+  if (kp >= 5) return { label: 'Active', color: '#b45309' }
+  if (kp >= 3) return { label: 'Unsettled', color: '#a16207' }
+  return { label: 'Quiet', color: '#15803d' }
 }
 
 export default function AuroraTrackerPage() {
@@ -58,10 +60,9 @@ export default function AuroraTrackerPage() {
     <main className="mx-auto w-full max-w-6xl px-4 py-10">
       <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-semibold font-mono tracking-wide" style={{ color: 'var(--accent)' }}>
-            Aurora Tracker
-          </h1>
-          <p className="mt-2 text-sm font-mono" style={{ color: 'var(--text-secondary)' }}>
+          <span className="page-eyebrow">chasing the northern lights 🌌</span>
+          <h1 className="page-title">Aurora Tracker</h1>
+          <p className="mt-2 text-sm text-inkmute">
             NOAA aurora oval + KP index with 2-minute updates
           </p>
         </div>
@@ -76,15 +77,19 @@ export default function AuroraTrackerPage() {
       </header>
 
       {isLoading ? (
-        <div className="space-glass rounded-xl p-6 font-mono text-sm" style={{ color: 'var(--text-secondary)' }}>
-          Loading aurora telemetry...
-        </div>
+        <LoadingState label="Loading aurora telemetry…" />
       ) : null}
 
       {!isLoading && error ? (
-        <div className="space-glass rounded-xl p-6 font-mono text-sm" style={{ borderColor: 'rgba(239,68,68,0.3)', color: '#fca5a5' }}>
-          {error.message}
-        </div>
+        <EmptyState
+          title="Aurora data is offline"
+          body="We couldn't reach the NOAA aurora feed right now. Try refreshing in a moment."
+          expression="wave"
+        >
+          <button type="button" className="space-btn" onClick={() => refetch()}>
+            Try again
+          </button>
+        </EmptyState>
       ) : null}
 
       {!isLoading && !error && data ? (
@@ -119,7 +124,7 @@ export default function AuroraTrackerPage() {
               <p className="text-xs uppercase tracking-[0.12em]" style={{ color: 'var(--text-muted)' }}>
                 Solar Wind
               </p>
-              <p className="mt-2 text-sm font-mono" style={{ color: 'var(--text-primary)' }}>
+              <p className="mt-2 text-sm font-mono text-navy">
                 Speed {data.kp.solar_wind.speed_km_s ?? 'N/A'} km/s
                 {' | '}
                 Density {data.kp.solar_wind.density_cm3 ?? 'N/A'} cm^-3
@@ -137,7 +142,7 @@ export default function AuroraTrackerPage() {
                 {regions.map((entry) => (
                   <div key={entry.region} className="flex items-center justify-between rounded-md border px-3 py-2" style={{ borderColor: 'var(--border)' }}>
                     <div>
-                      <p className="text-xs uppercase tracking-[0.08em]" style={{ color: 'var(--text-primary)' }}>
+                      <p className="text-xs uppercase tracking-[0.08em] text-navy">
                         {entry.region}
                       </p>
                       <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>
@@ -145,7 +150,7 @@ export default function AuroraTrackerPage() {
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-mono" style={{ color: 'var(--accent-strong)' }}>
+                      <p className="text-sm font-mono text-corn-dim">
                         {entry.percent}%
                       </p>
                       <p className="text-[11px]" style={{ color: 'var(--text-muted)' }}>
