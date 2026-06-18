@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -53,11 +54,38 @@ export default function TopNav() {
   const pathname = usePathname()
   const sectionLabel = getSectionLabel(pathname)
 
+  const [logoSrc, setLogoSrc] = useState<string>('/nasapedia-logo.svg')
+
+  useEffect(() => {
+    let mounted = true
+
+    const checkPng = async () => {
+      try {
+        const res = await fetch('/nasapedia-logo.png', { method: 'HEAD' })
+        if (mounted && res && res.ok) setLogoSrc('/nasapedia-logo.png')
+      } catch (e) {
+        // ignore — keep using svg
+      }
+    }
+
+    checkPng()
+    return () => {
+      mounted = false
+    }
+  }, [])
+
   return (
     <header className="global-topbar">
       <div className="flex items-center gap-3 min-w-0">
-        <Link href="/projects" className="intel-brand-link">
-          NASAPEDIA
+        <Link href="/projects" className="intel-brand-link flex items-center gap-3">
+          <Image
+            src={logoSrc}
+            alt="Nasapedia"
+            width={44}
+            height={44}
+            className="nasapedia-logo"
+          />
+          <span className="intel-brand-text">NASAPEDIA</span>
         </Link>
         <span className="global-topbar-separator" aria-hidden="true">|</span>
         <h1 className="global-topbar-title">{sectionLabel}</h1>

@@ -908,6 +908,22 @@ a {
   text-shadow: 0 0 16px rgba(242, 196, 13, 0.25);
 }
 
+.intel-brand-link .nasapedia-logo {
+  display: inline-block;
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
+.intel-brand-text {
+  display: inline-block;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
 .intel-topbar-link {
   display: inline-flex;
   align-items: center;
